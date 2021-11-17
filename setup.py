@@ -27,10 +27,6 @@ if sys.version_info < tuple(int(i) for i in MIN_VERSION.split(".")):
 with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 
-with open("requirements.txt", "r") as f:
-    REQUIREMENTS = f.read()
-
-
 setup(
     name=METADATA.__name__,
     version=METADATA.__version__,
@@ -54,4 +50,9 @@ setup(
         "pytest-cov",
     ],
     license=METADATA.__license__,
+    entry_points={
+        "console_scripts": [
+            f"{METADATA.__name__} = " f"{METADATA.__name__}.cli:main",
+        ],
+    },
 )

@@ -192,7 +192,9 @@ def get_dockerfiles_from_path(path: Union[str, Path] = None, name: str = None) -
     return dockerfiles
 
 
-def get_dockerfiles_from_paths(paths: Iterable[str, Path], name: str = None) -> list:
+def get_dockerfiles_from_paths(
+    paths: Iterable[Union[str, Path]], name: str = None
+) -> list:
     dockerfiles = []
     for path in paths:
         path = path if isinstance(path, Path) else Path(path)
