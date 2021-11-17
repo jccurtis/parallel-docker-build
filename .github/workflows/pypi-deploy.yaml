@@ -1,6 +1,6 @@
 # This workflow will build and check when new commits are pushed to main
-# or a pull request but only deploy to pypi when new tags are pushed matching
-# "v*".
+# or a pull request or on demand but only deploy to pypi when new tags are
+# pushed matching "v*".
 # Based on: https://github.com/marketplace/actions/pypi-deployment
 
 name: pypi-deploy
@@ -11,6 +11,7 @@ on:
     tags: [ 'v*' ]
     branches: [ $default-branch ]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   pypi_deploy:
