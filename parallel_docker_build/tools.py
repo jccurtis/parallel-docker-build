@@ -59,7 +59,6 @@ def do_build(
         "tag": f"{full_name}:latest",
         "nocache": rebuild,
         "quiet": False,
-        "name": name,
     }
     do_print(f"Building: {options}", name=name, quiet=quiet)
     for out in api.build(**options):
