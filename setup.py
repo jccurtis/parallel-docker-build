@@ -48,6 +48,8 @@ setup(
     tests_require=[
         "pytest",
         "pytest-cov",
+        "bump2version",
+        "pre-commit",
     ],
     license=METADATA.__license__,
     entry_points={
