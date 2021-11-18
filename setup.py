@@ -28,7 +28,7 @@ with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 
 setup(
-    name=METADATA.__name__,
+    name=METADATA.__name__.replace("_", "-"),
     version=METADATA.__version__,
     description=METADATA.__description__,
     long_description=LONG_DESCRIPTION,
