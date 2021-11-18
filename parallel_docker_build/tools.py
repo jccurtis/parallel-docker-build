@@ -134,7 +134,6 @@ def make_images(
     dockerfiles: Iterable[Path],
     organization: str,
     context: Path = None,
-    multiprocess: bool = False,
     max_num_workers: int = MAX_NUM_WORKERS,
     allow_cross_platform: bool = False,
     push: bool = False,
@@ -142,7 +141,7 @@ def make_images(
     quiet: bool = False,
     name: str = None,
 ) -> None:
-    if len(dockerfiles) == 1 or not multiprocess:
+    if len(dockerfiles) == 1 or max_num_workers == 1:
         for dockerfile in dockerfiles:
             make_image(
                 dockerfile,

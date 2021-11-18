@@ -59,12 +59,6 @@ def parse_cmd_line_args():
         help="Run docker push on the latest tag. Default is False.",
     )
     dockerfiles_parser.add_argument(
-        "-m",
-        "--multiprocess",
-        action="store_true",
-        help="Run each image workflow in a separate process. Default is False.",
-    )
-    dockerfiles_parser.add_argument(
         "-n",
         "--max_num_workers",
         type=int,
@@ -86,7 +80,6 @@ def main():
         tools.make_images(
             dockerfiles,
             args.organization,
-            multiprocess=args.multiprocess,
             max_num_workers=args.max_num_workers,
             allow_cross_platform=args.allow_cross_platform,
             push=args.push,
