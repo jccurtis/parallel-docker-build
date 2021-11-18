@@ -91,7 +91,7 @@ def main():
         tools.make_images(
             dockerfiles,
             args.organization,
-            context=args.context,
+            context=Path(args.context),
             max_num_workers=args.max_num_workers,
             allow_cross_platform=args.allow_cross_platform,
             push=args.push,
