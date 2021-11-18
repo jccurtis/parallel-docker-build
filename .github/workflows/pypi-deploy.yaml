@@ -39,4 +39,4 @@ jobs:
           # Create wheel
           pip: true
           # Only upload if a tag is pushed (otherwise just build & check)
-          upload: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') }}
+          # upload: ${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') }}
