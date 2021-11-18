@@ -58,7 +58,7 @@ with a max number of works fixed to half of your `cpu_count` from
 
 ```bash
 parallel-docker-build dockerfiles --help
-# usage: parallel-docker-build dockerfiles [-h] -o ORGANIZATION [-x] [-p] [-n MAX_NUM_WORKERS] paths [paths ...]
+# usage: parallel-docker-build dockerfiles [-h] -o ORGANIZATION [-c CONTEXT] [-x] [-p] [-n MAX_NUM_WORKERS] paths [paths ...]
 
 # positional arguments:
 #   paths                 Docker image filenames(s) or directories to search.
@@ -67,11 +67,13 @@ parallel-docker-build dockerfiles --help
 #   -h, --help            show this help message and exit
 #   -o ORGANIZATION, --organization ORGANIZATION
 #                         Organization for images.
+#   -c CONTEXT, --context CONTEXT
+#                         Build context. By default the current directory.
 #   -x, --allow_cross_platform
 #                         Allow cross platform (x86 vs aarch64) building. Default is False.
 #   -p, --push            Run docker push on the latest tag. Default is False.
 #   -n MAX_NUM_WORKERS, --max_num_workers MAX_NUM_WORKERS
-#                         Maximum number of build workers. If >1 multiprocessing is used. Max value is 64. Default is 1.
+#                         Maximum number of build workers. If >1 multiprocessing is used. Max value is half this computer's cpu count: 64. Default is 1.
 ```
 
 ### Workflow file (yaml)

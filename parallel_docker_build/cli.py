@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 from . import tools
 
 
@@ -47,6 +48,13 @@ def parse_cmd_line_args():
         help="Organization for images.",
     )
     dockerfiles_parser.add_argument(
+        "-c",
+        "--context",
+        type=str,
+        default=str(Path.cwd()),
+        help="Build context. By default the current directory.",
+    )
+    dockerfiles_parser.add_argument(
         "-x",
         "--allow_cross_platform",
         action="store_true",
@@ -65,7 +73,8 @@ def parse_cmd_line_args():
         default=1,
         help=(
             "Maximum number of build workers. If >1 multiprocessing is used. "
-            f"Max value is {tools.MAX_NUM_WORKERS}. Default is 1."
+            f"Max value is half this computer's cpu count: {tools.MAX_NUM_WORKERS}. "
+            "Default is 1."
         ),
     )
     return parser.parse_args()
@@ -80,6 +89,7 @@ def main():
         tools.make_images(
             dockerfiles,
             args.organization,
+            context=args.context,
             max_num_workers=args.max_num_workers,
             allow_cross_platform=args.allow_cross_platform,
             push=args.push,
