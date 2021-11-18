@@ -22,7 +22,9 @@ def parse_cmd_line_args():
         action="store_true",
         help="Suppress stdout",
     )
-    subparsers = parser.add_subparsers(title="mode", help="Mode of specifying a build.")
+    subparsers = parser.add_subparsers(
+        title="mode", dest="mode", help="Mode of specifying a build."
+    )
     workflow_parser = subparsers.add_parser("workflow")
     dockerfiles_parser = subparsers.add_parser("dockerfiles")
 
