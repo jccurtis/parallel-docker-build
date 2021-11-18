@@ -8,13 +8,16 @@ __url__ = "https://gitlab.com/jccurtis/parallel-docker-build"
 __version__ = "0.1.2"
 # classifiers from list at https://pypi.org/classifiers/
 __classifiers__ = [
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Development Status :: 4 - Beta",
-    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Natural Language :: English",
-    "License :: MIT",
+    "License :: OSI Approved :: MIT License",
 ]
 __license__ = "MIT"
 __copyright__ = """\
