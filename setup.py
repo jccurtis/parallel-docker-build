@@ -28,7 +28,7 @@ with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 
 setup(
-    name=METADATA.__name__.replace("_", "-"),
+    name=METADATA.__name__,
     version=METADATA.__version__,
     description=METADATA.__description__,
     long_description=LONG_DESCRIPTION,
@@ -55,7 +55,7 @@ setup(
     license=METADATA.__license__,
     entry_points={
         "console_scripts": [
-            f"{METADATA.__name__} = " f"{METADATA.__name__}.cli:main",
+            f"{METADATA.__name__} = " f"{METADATA.__name__.replace('-', '_')}.cli:main",
         ],
     },
 )

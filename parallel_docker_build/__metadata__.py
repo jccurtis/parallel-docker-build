@@ -1,6 +1,6 @@
-"""parallel_docker_build package metadata."""
+"""parallel-docker-build package metadata."""
 
-__name__ = "parallel_docker_build"
+__name__ = "parallel-docker-build"
 __author__ = "Joseph (Joey) Curtis"
 __email__ = "Contact author via github"
 __description__ = "parallel_docker_build"
