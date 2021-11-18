@@ -51,6 +51,7 @@ setup(
         "bump2version",
         "pre-commit",
     ],
+    keywords="automation docker continuous-deployment",
     license=METADATA.__license__,
     entry_points={
         "console_scripts": [
