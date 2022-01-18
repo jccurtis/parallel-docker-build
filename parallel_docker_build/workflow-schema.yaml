@@ -1,5 +1,5 @@
 # Organization for docker images. i.e. <Organization>/<image_name>
-Organization: str()
+organization: str()
 # Max number of parallel build workers (multiprocessing pool size). Default: 1
 max_num_workers: int(min=1, required=False)
 # Allow cross platform (x86 vs aarch64) building. Default: False
