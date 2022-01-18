@@ -11,6 +11,29 @@ MAX_NUM_WORKERS = int(multiprocessing.cpu_count() // 2)
 WORKFLOW_SCHEMA_PATH = Path(__file__).parent / "workflow-schema.yaml"
 
 
+def _absolute_path(path: Union[Path, str] = None) -> Path:
+    _path = (
+        Path.cwd() if path is None else path if isinstance(path, Path) else Path(path)
+    ).resolve()
+    if not _path.exists():
+        raise FileNotFoundError(f"Cannot locate path: {_path}")
+    return _path
+
+
+def _absolute_file(path: Union[Path, str] = None) -> Path:
+    _path = _absolute_path(path)
+    if not _path.is_file():
+        raise FileNotFoundError(f"{_path} is not a file!")
+    return _path
+
+
+def _absolute_dir(path: Union[Path, str] = None) -> Path:
+    _path = _absolute_path(path)
+    if not _path.is_dir():
+        raise FileNotFoundError(f"{_path} is not a directory!")
+    return _path
+
+
 def get_high_level_docker_api():
     return docker.from_env()
 
@@ -35,26 +58,30 @@ def do_print(*args, name: str = None, quiet: bool = False) -> None:
 
 
 def do_build(
-    dockerfile: Path,
+    dockerfile: Union[Path, str],
     full_name: str,
-    context: Path = None,
+    context: Union[Path, str] = None,
     rebuild: bool = False,
     quiet: bool = False,
     name: str = None,
 ) -> None:
+    dockerfile = _absolute_file(dockerfile)
+    context = _absolute_dir(context)
+    do_print(f"Building {dockerfile} from context {context}", name=name, quiet=quiet)
     api = get_low_level_docker_api()
     name = full_name if name is None else f"{name}|{full_name}"
-    _context = str(Path.cwd()) if context is None else str(context.resolve())
-    if dockerfile.is_absolute():
-        if not str(dockerfile).startswith(_context):
-            raise FileNotFoundError(
-                f"Dockerfile ({dockerfile} is not in context: {_context}"
-            )
-        _dockerfile = str(dockerfile).lstrip(_context)
-    else:
-        _dockerfile = str(dockerfile)
+    if not str(dockerfile).startswith(str(context)):
+        raise FileNotFoundError(
+            f"Dockerfile ({dockerfile} is not in context: {context}"
+        )
+    _dockerfile = str(dockerfile.relative_to(context))
+    if len(_dockerfile) == 0:
+        raise ValueError(
+            f"After striping context: ({context}) the dockerfile ({dockerfile}) "
+            f"is blank: {_dockerfile}"
+        )
     options = {
-        "path": _context,
+        "path": str(context),
         "dockerfile": _dockerfile,
         "tag": f"{full_name}:latest",
         "nocache": rebuild,
@@ -74,15 +101,18 @@ def do_push(full_name: str, tags: list, quiet: bool = False, name: str = None) -
 
 
 def make_image(
-    dockerfile: Path,
+    dockerfile: Union[Path, str],
     organization: str,
-    context: Path = None,
+    context: Union[Path, str] = None,
     allow_cross_platform: bool = False,
     push: bool = False,
     rebuild: bool = False,
     quiet: bool = False,
     name: str = None,
 ) -> None:
+    # Handle paths
+    dockerfile = _absolute_file(dockerfile)
+    context = _absolute_dir(context)
     # Name for initial logging before the docker image full_name is known
     _name = (
         dockerfile.parent.stem if name is None else f"{name}|{dockerfile.parent.stem}"
@@ -130,7 +160,7 @@ def make_image(
 
 
 def make_images(
-    dockerfiles: Iterable[Path],
+    dockerfiles: Iterable[Union[Path, str]],
     organization: str,
     context: Path = None,
     max_num_workers: int = MAX_NUM_WORKERS,
@@ -175,9 +205,7 @@ def make_images(
 
 
 def get_dockerfiles_from_path(path: Union[str, Path] = None, name: str = None) -> list:
-    path = (
-        Path.cwd() if path is None else path if isinstance(path, Path) else Path(path)
-    )
+    path = _absolute_path(path)
     dockerfiles = []
     for p in list(path.rglob("**/Dockerfile*")) + list(path.rglob("Dockerfile*")):
         if p.is_dir():
@@ -195,7 +223,7 @@ def get_dockerfiles_from_paths(
 ) -> list:
     dockerfiles = []
     for path in paths:
-        path = path if isinstance(path, Path) else Path(path)
+        path = _absolute_path(path)
         if path.is_dir():
             dockerfiles.extend(get_dockerfiles_from_path(path, name=name))
         elif path.stem.startswith("Dockerfile"):
