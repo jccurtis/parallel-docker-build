@@ -247,30 +247,37 @@ def validate_workflow_yaml(workflow: Union[Path, dict]) -> dict:
         Validated workflow
     """
     # Load
-    if isinstance(workflow, Path):
-        data = yamale.make_data(path=workflow)
+    if isinstance(workflow, (Path, str)):
+        data = yamale.make_data(path=_absolute_file(workflow))
     elif isinstance(workflow, dict):
         data = yamale.make_data(content=yaml.dump(workflow))
     else:
         raise ValueError(f"The workflow is not supported: {workflow}")
     schema = yamale.make_schema(WORKFLOW_SCHEMA_PATH)
     yamale.validate(schema, data)
-    return data[0][0]
+    validated = data[0][0]
+    # Defaults
+    validated.setdefault("max_num_workers", 1)
+    validated.setdefault("cross_platform", False)
+    validated.setdefault("push", False)
+    for stage in validated["stages"]:
+        stage.setdefault("context", ".")
+    return validated
 
 
 def run_workflow(workflow: Path, rebuild: bool = False, quiet: bool = False) -> None:
     do_print(f"Loading: {workflow}")
-    workflow = validate_workflow_yaml(workflow)
-    for i, stage in enumerate(workflow["stages"]):
-        name = f"{stage['name']}(Stage {i} of {len(workflow['stages'])})"
+    data = validate_workflow_yaml(workflow)
+    for i, stage in enumerate(data["stages"]):
+        name = f"{stage['name']}(Stage {i} of {len(data['stages'])})"
         do_print("Starting run...", name=name)
         make_images(
-            workflow["paths"],
-            workflow["organization"],
-            context=workflow.parent,
-            max_num_workers=workflow["max_num_workers"],
-            allow_cross_platform=workflow["allow_cross_platform"],
-            push=workflow["push"],
+            get_dockerfiles_from_paths(stage["paths"]),
+            data["organization"],
+            context=_absolute_dir(stage["context"]),
+            max_num_workers=data["max_num_workers"],
+            allow_cross_platform=data["cross_platform"],
+            push=data["push"],
             rebuild=rebuild,
             quiet=quiet,
             name=name,
