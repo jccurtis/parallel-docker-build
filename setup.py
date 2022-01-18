@@ -55,7 +55,7 @@ setup(
     license=METADATA.__license__,
     entry_points={
         "console_scripts": [
-            f"{METADATA.__name__} = " f"{METADATA.__name__.replace('-', '_')}.cli:main",
+            "parallel-docker-build = " "parallel_docker_build.cli:main",
         ],
     },
 )
