@@ -269,7 +269,7 @@ def run_workflow(workflow: Path, rebuild: bool = False, quiet: bool = False) -> 
     do_print(f"Loading: {workflow}")
     data = validate_workflow_yaml(workflow)
     for i, stage in enumerate(data["stages"]):
-        name = f"{stage['name']}(Stage {i} of {len(data['stages'])})"
+        name = f"{stage['name']} (Stage {i + 1} of {len(data['stages'])})"
         do_print("Starting run...", name=name)
         make_images(
             get_dockerfiles_from_paths(stage["paths"]),
