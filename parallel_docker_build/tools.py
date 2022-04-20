@@ -11,6 +11,10 @@ MAX_NUM_WORKERS = int(multiprocessing.cpu_count() // 2)
 WORKFLOW_SCHEMA_PATH = Path(__file__).parent / "workflow-schema.yaml"
 
 
+class BuildError(RuntimeError):
+    """Error while building an image."""
+
+
 def _absolute_path(path: Union[Path, str] = None) -> Path:
     _path = (
         Path.cwd() if path is None else path if isinstance(path, Path) else Path(path)
@@ -47,7 +51,7 @@ def parse_stream(out):
     if "stream" in data:
         return data["stream"]
     elif "error" in data:
-        return data["error"]
+        raise BuildError(data["error"])
     else:
         return str(data)
 
