@@ -58,7 +58,7 @@ def parse_stream(out) -> List[AnyStr]:
 
 def do_print(*args, name: str = None, quiet: bool = False) -> None:
     if not quiet:
-        print(f"[parallel_docker_build{'' if name is None else f'|{name}'}]", *args)
+        print(f"[{'parallel_docker_build' if name is None else f'{name}'}]", *args)
 
 
 def do_build(
@@ -274,7 +274,8 @@ def run_workflow(workflow: Path, rebuild: bool = False, quiet: bool = False) -> 
     do_print(f"Loading: {workflow}")
     data = validate_workflow_yaml(workflow)
     for i, stage in enumerate(data["stages"]):
-        name = f"{stage['name']} (Stage {i + 1} of {len(data['stages'])})"
+        # name = f"Stage {i + 1} of {len(data['stages'])}"
+        name = None
         do_print("Starting run...", name=name)
         make_images(
             get_dockerfiles_from_paths(stage["paths"]),
