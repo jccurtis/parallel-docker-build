@@ -4,7 +4,7 @@ import multiprocessing
 import yamale
 import yaml
 from pathlib import Path
-from typing import Iterable, Union
+from typing import Iterable, Union, List, AnyStr
 import docker
 
 MAX_NUM_WORKERS = int(multiprocessing.cpu_count() // 2)
@@ -46,14 +46,14 @@ def get_low_level_docker_api():
     return docker.APIClient()
 
 
-def parse_stream(out):
+def parse_stream(out) -> List[AnyStr]:
     data = json.loads(out)
     if "stream" in data:
-        return data["stream"]
+        return data["stream"].rstrip("\n").split("\n")
     elif "error" in data:
         raise BuildError(data["error"])
     else:
-        return str(data)
+        return str(data).rstrip("\n").split("\n")
 
 
 def do_print(*args, name: str = None, quiet: bool = False) -> None:
@@ -93,7 +93,8 @@ def do_build(
     }
     do_print(f"Building: {options}", name=name, quiet=quiet)
     for out in api.build(**options):
-        do_print(parse_stream(out).rstrip("\n"), name=name, quiet=quiet)
+        for line in parse_stream(out):
+            do_print(line, name=name, quiet=quiet)
 
 
 def do_push(full_name: str, tags: list, quiet: bool = False, name: str = None) -> None:
