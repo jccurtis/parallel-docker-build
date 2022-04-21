@@ -48,12 +48,12 @@ def get_low_level_docker_api():
 
 def parse_stream(out) -> List[AnyStr]:
     data = json.loads(out)
-    if "stream" in data:
-        return data["stream"].rstrip("\n").split("\n")
-    elif "error" in data:
+    if "error" in data:
         raise BuildError(data["error"])
+    elif "stream" in data:
+        return data["stream"]
     else:
-        return str(data).rstrip("\n").split("\n")
+        return str(data)
 
 
 def do_print(*args, name: str = None, quiet: bool = False) -> None:
