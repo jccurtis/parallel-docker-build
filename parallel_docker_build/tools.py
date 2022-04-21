@@ -209,7 +209,9 @@ def make_images(
                         ),
                     )
                 )
-            [r.wait() for r in results]
+            # NOTE get() allows remote exceptions to be raised in the parent
+            #      process whereas wait() will silently ignore them.
+            [r.get() for r in results]
 
 
 def get_dockerfiles_from_path(path: Union[str, Path] = None, name: str = None) -> list:
