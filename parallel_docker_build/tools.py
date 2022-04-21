@@ -93,8 +93,11 @@ def do_build(
     }
     do_print(f"Building: {options}", name=name, quiet=quiet)
     for out in api.build(**options):
-        for line in parse_stream(out):
+        lines = parse_stream(out)
+        for line in lines.rstrip("\n").split("\n"):
             do_print(line, name=name, quiet=quiet)
+        if "ERROR: " in lines:
+            raise BuildError(f"pip-like ERROR code encountered:\n{lines}")
 
 
 def do_push(full_name: str, tags: list, quiet: bool = False, name: str = None) -> None:
