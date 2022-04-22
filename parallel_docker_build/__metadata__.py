@@ -4,7 +4,7 @@ __name__ = "parallel-docker-build"
 __author__ = "Joseph (Joey) Curtis"
 __email__ = "Contact author via github"
 __description__ = "parallel_docker_build"
-__url__ = "https://gitlab.com/jccurtis/parallel-docker-build"
+__url__ = "https://github.com/jccurtis/parallel-docker-build"
 __version__ = "0.2.2"
 # classifiers from list at https://pypi.org/classifiers/
 __classifiers__ = [
