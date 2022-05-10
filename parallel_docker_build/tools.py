@@ -6,6 +6,7 @@ import yaml
 from pathlib import Path
 from typing import Iterable, Union, List, AnyStr
 import docker
+from docker.utils import kwargs_from_env
 
 MAX_NUM_WORKERS = int(multiprocessing.cpu_count() // 2)
 WORKFLOW_SCHEMA_PATH = Path(__file__).parent / "workflow-schema.yaml"
@@ -42,6 +43,11 @@ def get_high_level_docker_api():
     return docker.from_env()
 
 
+def get_low_level_docker_api():
+    kwargs = kwargs_from_env()
+    return docker.APIClient(**kwargs)
+
+
 def parse_stream(out) -> List[AnyStr]:
     data = json.loads(out)
     if "error" in data:
@@ -68,7 +74,7 @@ def do_build(
     dockerfile = _absolute_file(dockerfile)
     context = _absolute_dir(context)
     do_print(f"Building {dockerfile} from context {context}", name=name, quiet=quiet)
-    api = get_high_level_docker_api()
+    api = get_low_level_docker_api()
     name = full_name if name is None else f"{name}|{full_name}"
     if not str(dockerfile).startswith(str(context)):
         raise FileNotFoundError(
