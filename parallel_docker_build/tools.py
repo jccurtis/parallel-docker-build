@@ -119,7 +119,7 @@ def make_image(
     rebuild: bool = False,
     quiet: bool = False,
     name: str = None,
-    repo: str = None,
+    registry: str = None,
 ) -> None:
     # Handle paths
     dockerfile = _absolute_file(dockerfile)
@@ -167,8 +167,8 @@ def make_image(
     )
     # Push it
     if push:
-        full_repo_name = f"{repo}/{full_name}" if repo is not None else full_name
-        do_push(full_repo_name, tags=["latest"], quiet=quiet, name=name)
+        full_reg_name = f"{registry}/{full_name}" if registry is not None else full_name
+        do_push(full_reg_name, tags=["latest"], quiet=quiet, name=name)
 
 
 def make_images(
@@ -181,7 +181,7 @@ def make_images(
     rebuild: bool = False,
     quiet: bool = False,
     name: str = None,
-    repo: str = None,
+    registry: str = None,
 ) -> None:
     if len(dockerfiles) == 1 or max_num_workers == 1:
         for dockerfile in dockerfiles:
@@ -194,7 +194,7 @@ def make_images(
                 push=push,
                 quiet=quiet,
                 name=name,
-                repo=repo,
+                registry=registry,
             )
     else:
         results = []
@@ -212,7 +212,7 @@ def make_images(
                             push=push,
                             quiet=quiet,
                             name=name,
-                            repo=repo,
+                            registry=registry,
                         ),
                     )
                 )
@@ -277,7 +277,7 @@ def validate_workflow_yaml(workflow: Union[Path, dict]) -> dict:
     validated.setdefault("max_num_workers", 1)
     validated.setdefault("cross_platform", False)
     validated.setdefault("push", False)
-    validated.setdefault("repository", None)
+    validated.setdefault("registry", None)
     for stage in validated["stages"]:
         stage.setdefault("context", ".")
     return validated
@@ -299,6 +299,6 @@ def run_workflow(workflow: Path, rebuild: bool = False, quiet: bool = False) -> 
             rebuild=rebuild,
             quiet=quiet,
             name=name,
-            repo=data["repository"],
+            registry=data["registry"],
         )
     do_print(f"Workflow complete: {workflow}")

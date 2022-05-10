@@ -1,7 +1,7 @@
 # Organization for docker images. i.e. <Organization>/<image_name>
 organization: str()
-# The url of the repository: Default None (dockerhub.com)
-repository: str(required=False)
+# The url of the registry: Default None (dockerhub.com)
+registry: str(required=False)
 # Max number of parallel build workers (multiprocessing pool size). Default: 1
 max_num_workers: int(min=1, required=False)
 # Allow cross platform (x86 vs aarch64) building. Default: False
