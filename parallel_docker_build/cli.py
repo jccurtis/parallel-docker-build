@@ -22,6 +22,13 @@ def parse_cmd_line_args():
         action="store_true",
         help="Suppress stdout",
     )
+    parser.add_argument(
+        "-t",
+        "--tag",
+        type=str,
+        default="latest",
+        help="Custom tag",
+    )
     subparsers = parser.add_subparsers(
         title="mode", dest="mode", help="Mode of specifying a build."
     )
@@ -85,7 +92,9 @@ def parse_cmd_line_args():
 def main():
     args = parse_cmd_line_args()
     if args.mode == "workflow":
-        tools.run_workflow(args.workflow, rebuild=args.rebuild, quiet=args.quiet)
+        tools.run_workflow(
+            args.workflow, rebuild=args.rebuild, quiet=args.quiet, tag=args.tag
+        )
     elif args.mode == "dockerfiles":
         dockerfiles = tools.get_dockerfiles_from_paths(args.paths)
         tools.make_images(
@@ -97,6 +106,7 @@ def main():
             push=args.push,
             rebuild=args.rebuild,
             quiet=args.quiet,
+            tag=args.tag,
         )
     else:
         raise ValueError(f"Unknown mode: {args.mode}")
