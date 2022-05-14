@@ -6,6 +6,8 @@ max_num_workers: int(min=1, required=False)
 cross_platform: bool(required=False)
 # Push images to registry. Default: False
 push: bool(required=False)
+# Image tag. Default: "latest"
+tag: str()
 # Workflow build stages
 stages: list(include('stage'), min=1)
 ---

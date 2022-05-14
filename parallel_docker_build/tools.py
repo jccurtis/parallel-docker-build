@@ -284,6 +284,7 @@ def validate_workflow_yaml(workflow: Union[IO, dict, str]) -> dict:
     validated.setdefault("max_num_workers", 1)
     validated.setdefault("cross_platform", False)
     validated.setdefault("push", False)
+    validated.setdefault("tag", "latest")
     for stage in validated["stages"]:
         stage.setdefault("context", ".")
     return validated
@@ -307,6 +308,6 @@ def run_workflow(
             rebuild=rebuild,
             quiet=quiet,
             name=name,
-            tag=tag,
+            tag=data["tag"],
         )
     do_print(f"Workflow complete: {workflow}")
