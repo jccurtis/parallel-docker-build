@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Iterable, Union, List, AnyStr
 import docker
 from docker.utils import kwargs_from_env
+import sys
 
 MAX_NUM_WORKERS = int(multiprocessing.cpu_count() // 2)
 WORKFLOW_SCHEMA_PATH = Path(__file__).parent / "workflow-schema.yaml"
@@ -259,7 +260,10 @@ def validate_workflow_yaml(workflow: Union[Path, dict]) -> dict:
     """
     # Load
     if isinstance(workflow, (Path, str)):
-        data = yamale.make_data(path=_absolute_file(workflow))
+        if workflow == "-":
+            data = yamale.make_data(content=sys.stdin.read())
+        else:
+            data = yamale.make_data(path=_absolute_file(workflow))
     elif isinstance(workflow, dict):
         data = yamale.make_data(content=yaml.dump(workflow))
     else:
