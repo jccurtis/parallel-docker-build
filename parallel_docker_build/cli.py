@@ -22,13 +22,6 @@ def parse_cmd_line_args():
         action="store_true",
         help="Suppress stdout",
     )
-    parser.add_argument(
-        "-t",
-        "--tag",
-        type=str,
-        default="latest",
-        help="Custom tag",
-    )
     subparsers = parser.add_subparsers(
         title="mode", dest="mode", help="Mode of specifying a build."
     )
@@ -86,6 +79,13 @@ def parse_cmd_line_args():
             "Default is 1."
         ),
     )
+    dockerfiles_parser.add_argument(
+        "-t",
+        "--tag",
+        type=str,
+        default="latest",
+        help="Custom tag. Default is 'latest'",
+    )
     return parser.parse_args()
 
 
@@ -93,7 +93,7 @@ def main():
     args = parse_cmd_line_args()
     if args.mode == "workflow":
         tools.run_workflow(
-            args.workflow, rebuild=args.rebuild, quiet=args.quiet, tag=args.tag
+            args.workflow, rebuild=args.rebuild, quiet=args.quiet,
         )
     elif args.mode == "dockerfiles":
         dockerfiles = tools.get_dockerfiles_from_paths(args.paths)
