@@ -7,7 +7,7 @@ cross_platform: bool(required=False)
 # Push images to registry. Default: False
 push: bool(required=False)
 # Image tag. Default: "latest"
-tag: str()
+tag: str(required=False)
 # Workflow build stages
 stages: list(include('stage'), min=1)
 ---
