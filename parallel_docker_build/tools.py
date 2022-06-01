@@ -44,8 +44,7 @@ def get_high_level_docker_api():
 
 
 def get_low_level_docker_api():
-    kwargs = kwargs_from_env()
-    return docker.APIClient(**kwargs)
+    return docker.APIClient(**kwargs_from_env())
 
 
 def parse_stream(out) -> List[AnyStr]:
