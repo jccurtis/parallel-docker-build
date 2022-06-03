@@ -6,6 +6,7 @@ import yaml
 from pathlib import Path
 from typing import Iterable, Union, List, AnyStr
 import docker
+from docker.utils import kwargs_from_env
 
 MAX_NUM_WORKERS = int(multiprocessing.cpu_count() // 2)
 WORKFLOW_SCHEMA_PATH = Path(__file__).parent / "workflow-schema.yaml"
@@ -43,7 +44,7 @@ def get_high_level_docker_api():
 
 
 def get_low_level_docker_api():
-    return docker.APIClient()
+    return docker.APIClient(**kwargs_from_env())
 
 
 def parse_stream(out) -> List[AnyStr]:
