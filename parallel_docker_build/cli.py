@@ -93,7 +93,9 @@ def main():
     args = parse_cmd_line_args()
     if args.mode == "workflow":
         tools.run_workflow(
-            args.workflow, rebuild=args.rebuild, quiet=args.quiet,
+            args.workflow,
+            rebuild=args.rebuild,
+            quiet=args.quiet,
         )
     elif args.mode == "dockerfiles":
         dockerfiles = tools.get_dockerfiles_from_paths(args.paths)
