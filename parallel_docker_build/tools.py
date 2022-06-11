@@ -291,7 +291,7 @@ def validate_workflow_yaml(workflow: Union[IO, dict, str]) -> dict:
 
 
 def run_workflow(
-    workflow: Path, rebuild: bool = False, quiet: bool = False, tag: str = "latest"
+    workflow: IO, rebuild: bool = False, quiet: bool = False, tag: str = "latest"
 ) -> None:
     do_print(f"Loading: {workflow}")
     data = validate_workflow_yaml(workflow)
