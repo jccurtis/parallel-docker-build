@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Iterable, Union, List, AnyStr, IO
 import docker
 from docker.utils import kwargs_from_env
-import sys
+
 
 MAX_NUM_WORKERS = int(multiprocessing.cpu_count() // 2)
 WORKFLOW_SCHEMA_PATH = Path(__file__).parent / "workflow-schema.yaml"
