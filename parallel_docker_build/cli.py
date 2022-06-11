@@ -31,7 +31,7 @@ def parse_cmd_line_args():
     # Specify a yaml workflow
     workflow_parser.add_argument(
         "workflow",
-        type=str,
+        type=argparse.FileType("r"),
         help="Path to workflow yaml file image filenames(s).",
     )
 
@@ -79,13 +79,24 @@ def parse_cmd_line_args():
             "Default is 1."
         ),
     )
+    dockerfiles_parser.add_argument(
+        "-t",
+        "--tag",
+        type=str,
+        default="latest",
+        help="Custom tag. Default is 'latest'",
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_cmd_line_args()
     if args.mode == "workflow":
-        tools.run_workflow(args.workflow, rebuild=args.rebuild, quiet=args.quiet)
+        tools.run_workflow(
+            args.workflow,
+            rebuild=args.rebuild,
+            quiet=args.quiet,
+        )
     elif args.mode == "dockerfiles":
         dockerfiles = tools.get_dockerfiles_from_paths(args.paths)
         tools.make_images(
@@ -97,6 +108,7 @@ def main():
             push=args.push,
             rebuild=args.rebuild,
             quiet=args.quiet,
+            tag=args.tag,
         )
     else:
         raise ValueError(f"Unknown mode: {args.mode}")

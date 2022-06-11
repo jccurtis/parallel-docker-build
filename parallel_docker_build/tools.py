@@ -4,9 +4,10 @@ import multiprocessing
 import yamale
 import yaml
 from pathlib import Path
-from typing import Iterable, Union, List, AnyStr
+from typing import Iterable, Union, List, AnyStr, IO
 import docker
 from docker.utils import kwargs_from_env
+
 
 MAX_NUM_WORKERS = int(multiprocessing.cpu_count() // 2)
 WORKFLOW_SCHEMA_PATH = Path(__file__).parent / "workflow-schema.yaml"
@@ -69,6 +70,7 @@ def do_build(
     rebuild: bool = False,
     quiet: bool = False,
     name: str = None,
+    tag: str = "latest",
 ) -> None:
     dockerfile = _absolute_file(dockerfile)
     context = _absolute_dir(context)
@@ -88,7 +90,7 @@ def do_build(
     options = {
         "path": str(context),
         "dockerfile": _dockerfile,
-        "tag": f"{full_name}:latest",
+        "tag": f"{full_name}:{tag}",
         "nocache": rebuild,
         "quiet": False,
     }
@@ -118,6 +120,7 @@ def make_image(
     rebuild: bool = False,
     quiet: bool = False,
     name: str = None,
+    tag: str = "latest",
 ) -> None:
     # Handle paths
     dockerfile = _absolute_file(dockerfile)
@@ -161,11 +164,17 @@ def make_image(
         full_name += "_" + "_".join(extra_tags)
     # Build it
     do_build(
-        dockerfile, full_name, context=context, rebuild=rebuild, quiet=quiet, name=name
+        dockerfile,
+        full_name,
+        context=context,
+        rebuild=rebuild,
+        quiet=quiet,
+        name=name,
+        tag=tag,
     )
     # Push it
     if push:
-        do_push(full_name, tags=["latest"], quiet=quiet, name=name)
+        do_push(full_name, tags=[tag], quiet=quiet, name=name)
 
 
 def make_images(
@@ -178,6 +187,7 @@ def make_images(
     rebuild: bool = False,
     quiet: bool = False,
     name: str = None,
+    tag: str = "latest",
 ) -> None:
     if len(dockerfiles) == 1 or max_num_workers == 1:
         for dockerfile in dockerfiles:
@@ -190,6 +200,7 @@ def make_images(
                 push=push,
                 quiet=quiet,
                 name=name,
+                tag=tag,
             )
     else:
         results = []
@@ -207,6 +218,7 @@ def make_images(
                             push=push,
                             quiet=quiet,
                             name=name,
+                            tag=tag,
                         ),
                     )
                 )
@@ -244,13 +256,13 @@ def get_dockerfiles_from_paths(
     return dockerfiles
 
 
-def validate_workflow_yaml(workflow: Union[Path, dict]) -> dict:
+def validate_workflow_yaml(workflow: Union[IO, dict, str]) -> dict:
     """Validate workflow yaml file
 
     Parameters
     ----------
-    workflow : Union[Path, dict]
-        Workflow yaml path or loaded dictionary.
+    workflow : Union[IO, dict, str]
+        Workflow yaml file-object/stream, dictionary or string with yaml data.
 
     Returns
     -------
@@ -258,12 +270,13 @@ def validate_workflow_yaml(workflow: Union[Path, dict]) -> dict:
         Validated workflow
     """
     # Load
-    if isinstance(workflow, (Path, str)):
-        data = yamale.make_data(path=_absolute_file(workflow))
-    elif isinstance(workflow, dict):
-        data = yamale.make_data(content=yaml.dump(workflow))
+    if isinstance(workflow, dict):
+        content = yaml.dump(workflow)
+    elif hasattr(workflow, "read"):
+        content = workflow.read()
     else:
-        raise ValueError(f"The workflow is not supported: {workflow}")
+        content = workflow
+    data = yamale.make_data(content=content)
     schema = yamale.make_schema(WORKFLOW_SCHEMA_PATH)
     yamale.validate(schema, data)
     validated = data[0][0]
@@ -271,12 +284,15 @@ def validate_workflow_yaml(workflow: Union[Path, dict]) -> dict:
     validated.setdefault("max_num_workers", 1)
     validated.setdefault("cross_platform", False)
     validated.setdefault("push", False)
+    validated.setdefault("tag", "latest")
     for stage in validated["stages"]:
         stage.setdefault("context", ".")
     return validated
 
 
-def run_workflow(workflow: Path, rebuild: bool = False, quiet: bool = False) -> None:
+def run_workflow(
+    workflow: IO, rebuild: bool = False, quiet: bool = False, tag: str = "latest"
+) -> None:
     do_print(f"Loading: {workflow}")
     data = validate_workflow_yaml(workflow)
     for i, stage in enumerate(data["stages"]):
@@ -292,5 +308,6 @@ def run_workflow(workflow: Path, rebuild: bool = False, quiet: bool = False) -> 
             rebuild=rebuild,
             quiet=quiet,
             name=name,
+            tag=data["tag"],
         )
     do_print(f"Workflow complete: {workflow}")
