@@ -31,7 +31,7 @@ def parse_cmd_line_args():
     # Specify a yaml workflow
     workflow_parser.add_argument(
         "workflow",
-        type=str,
+        type=argparse.FileType("r"),
         help="Path to workflow yaml file image filenames(s).",
     )
 
